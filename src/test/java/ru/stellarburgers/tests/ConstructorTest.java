@@ -6,14 +6,10 @@ import io.qameta.allure.Step;
 import io.qameta.allure.Story;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import ru.stellarburgers.base.BaseAuthUITest;
 import ru.stellarburgers.data.ClientData;
 import ru.stellarburgers.pageobject.LoginPage;
 import ru.stellarburgers.pageobject.MainPage;
-
-import java.time.Duration;
 
 import static org.junit.Assert.assertTrue;
 
@@ -27,9 +23,9 @@ public class ConstructorTest extends BaseAuthUITest {
         LoginPage loginPage = new LoginPage(driver);
         loginPage.login(client.getEmail(), client.getPassword());
 
-        // Явное ожидание загрузки главной страницы (кнопка "Оформить заказ" видима)
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(MainPage.ORDER_BUTTON_LOCATOR));
+        // Ожидание загрузки главной страницы – инкапсулировано в Page Object
+        MainPage mainPage = new MainPage(driver);
+        mainPage.waitForPageLoaded();
     }
 
     @Test

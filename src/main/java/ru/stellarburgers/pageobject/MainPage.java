@@ -1,5 +1,6 @@
 package ru.stellarburgers.pageobject;
 
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -9,49 +10,57 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class MainPage extends BasePage {
 
-    // Публичные локаторы для использования в тестах
-    public static final By ORDER_BUTTON_LOCATOR = By.xpath("//*[@id='root']/div/main/section[2]/div/button[text()='Оформить заказ']");
+    // Публичный локатор для ожидания загрузки главной страницы
+    public static final By ORDER_BUTTON_LOCATOR = By.xpath(".//button[text()='Оформить заказ']");
 
-    // Локаторы табов – теперь указывают на родительский div (кликабельный контейнер)
-    @FindBy(xpath = "//*[@id='root']/div/main/section[1]/div[1]/div[1]")
+    // Табы: ищем span по тексту, но кликаем по родительскому div (чтобы активный класс появился у него)
+    @FindBy(xpath = ".//div[contains(@class, 'tab_tab') and .//span[text()='Булки']]")
     private WebElement bunsTab;
 
-    @FindBy(xpath = "//*[@id='root']/div/main/section[1]/div[1]/div[2]")
+    @FindBy(xpath = ".//div[contains(@class, 'tab_tab') and .//span[text()='Соусы']]")
     private WebElement saucesTab;
 
-    @FindBy(xpath = "//*[@id='root']/div/main/section[1]/div[1]/div[3]")
+    @FindBy(xpath = ".//div[contains(@class, 'tab_tab') and .//span[text()='Начинки']]")
     private WebElement fillingsTab;
 
-    @FindBy(xpath = "//*[@id='root']/div/main/section[2]/div/button[text()='Войти в аккаунт']")
+    // Кнопки
+    @FindBy(xpath = ".//button[text()='Войти в аккаунт']")
     private WebElement loginAccountButton;
 
-    @FindBy(xpath = "//*[@id='root']/div/header/nav/a/p")
+    @FindBy(xpath = ".//a[contains(@href, '/account')]")
     private WebElement personalAccountButton;
 
-    @FindBy(xpath = "//*[@id='root']/div/main/section[2]/div/button[text()='Оформить заказ']")
+    @FindBy(xpath = ".//button[text()='Оформить заказ']")
     private WebElement orderButton;
 
     public MainPage(WebDriver driver) {
         super(driver);
     }
 
-    // ---- Клики через JavaScript (обход перекрытия) ----
+    @Step("Ожидание загрузки главной страницы")
+    public void waitForPageLoaded() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(ORDER_BUTTON_LOCATOR));
+    }
+
+    @Step("Клик по табу «Булки»")
     public void clickBunsTab() {
         wait.until(ExpectedConditions.elementToBeClickable(bunsTab));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", bunsTab);
     }
 
+    @Step("Клик по табу «Соусы»")
     public void clickSaucesTab() {
         wait.until(ExpectedConditions.elementToBeClickable(saucesTab));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", saucesTab);
     }
 
+    @Step("Клик по табу «Начинки»")
     public void clickFillingsTab() {
         wait.until(ExpectedConditions.elementToBeClickable(fillingsTab));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", fillingsTab);
     }
 
-    // ---- Проверка активности (явное ожидание появления класса) ----
+    @Step("Проверка активности таба «Булки»")
     public boolean isBunsTabActive() {
         try {
             wait.until(ExpectedConditions.attributeContains(bunsTab, "class", "tab_tab_type_current"));
@@ -61,6 +70,7 @@ public class MainPage extends BasePage {
         }
     }
 
+    @Step("Проверка активности таба «Соусы»")
     public boolean isSaucesTabActive() {
         try {
             wait.until(ExpectedConditions.attributeContains(saucesTab, "class", "tab_tab_type_current"));
@@ -70,6 +80,7 @@ public class MainPage extends BasePage {
         }
     }
 
+    @Step("Проверка активности таба «Начинки»")
     public boolean isFillingsTabActive() {
         try {
             wait.until(ExpectedConditions.attributeContains(fillingsTab, "class", "tab_tab_type_current"));
@@ -79,15 +90,17 @@ public class MainPage extends BasePage {
         }
     }
 
-    // ---- Остальные методы ----
+    @Step("Клик по кнопке «Войти в аккаунт»")
     public void clickLoginAccountButton() {
         loginAccountButton.click();
     }
 
+    @Step("Клик по кнопке «Личный кабинет»")
     public void clickPersonalAccountButton() {
         personalAccountButton.click();
     }
 
+    @Step("Проверка отображения кнопки «Оформить заказ»")
     public boolean isOrderButtonDisplayed() {
         try {
             return orderButton.isDisplayed();
